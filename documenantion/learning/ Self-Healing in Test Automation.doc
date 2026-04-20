@@ -1,0 +1,549 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 LucidaGrande;\f2\fnil\fcharset0 AppleColorEmoji;
+\f3\fnil\fcharset0 .SFNS-Regular;\f4\froman\fcharset0 TimesNewRomanPSMT;\f5\fnil\fcharset0 .SFNS-Semibold;
+\f6\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;\f7\fnil\fcharset0 HelveticaNeue-Bold;\f8\froman\fcharset0 Times-Bold;
+\f9\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red14\green14\blue14;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c6700\c6700\c6700;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs36 \cf0 \
+\
+String Similarity \'96 Self-Healing in Test Automation\
+https://www.youtube.com/watch?v=We3YDTzNXEk\
+\
+Concept:\
+String similarity means measuring how close two strings are.\
+\
+Example:\
+"login_btn" vs "login_button"\
+These are similar but not exactly the same.\
+\
+--------------------------------------------------\
+Main Idea (Edit Distance)\
+--------------------------------------------------\
+Edit distance = number of changes needed to make two strings equal.\
+\
+Types of changes:\
+1. Insert (add character)\
+2. Delete (remove character)\
+3. Replace (change character)\
+\
+Example:\
+"login_btn" 
+\f1 \uc0\u8594 
+\f0  "login_button"\
+Distance = 5 (5 insert operations)\
+\
+Rule:\
+Lower distance = more similar\
+Higher distance = less similar\
+\
+--------------------------------------------------\
+Why this is important in QA\
+--------------------------------------------------\
+Problem:\
+Locator changes break automation tests.\
+\
+Old locator:\
+id = "login_btn"\
+\
+New locator:\
+id = "login_button"\
+\
+Test fails 
+\f2 \uc0\u10060 
+\f0 \
+\
+--------------------------------------------------\
+Solution (Self-Healing)\
+--------------------------------------------------\
+System:\
+1. Takes old locator\
+2. Compares with current elements\
+3. Finds closest match\
+4. Uses it automatically\
+\
+Result:\
+Test continues without failure 
+\f2 \uc0\u9989 
+\f0 \
+\
+--------------------------------------------------\
+How Self-Healing Works\
+--------------------------------------------------\
+Step 1: Get old locator\
+Step 2: Collect new UI locators\
+Step 3: Calculate similarity\
+Step 4: Choose best match\
+\
+--------------------------------------------------\
+Python Implementation (Edit Distance)\
+--------------------------------------------------\
+\
+def edit_distance(s1, s2):\
+    dp = [[0]*(len(s2)+1) for _ in range(len(s1)+1)]\
+\
+    for i in range(len(s1)+1):\
+        dp[i][0] = i\
+    for j in range(len(s2)+1):\
+        dp[0][j] = j\
+\
+    for i in range(1, len(s1)+1):\
+        for j in range(1, len(s2)+1):\
+            if s1[i-1] == s2[j-1]:\
+                dp[i][j] = dp[i-1][j-1]\
+            else:\
+                dp[i][j] = 1 + min(\
+                    dp[i-1][j],      # delete\
+                    dp[i][j-1],      # insert\
+                    dp[i-1][j-1]     # replace\
+                )\
+\
+    return dp[-1][-1]\
+\
+--------------------------------------------------\
+Find Best Matching Locator\
+--------------------------------------------------\
+\
+old_locator = "login_btn"\
+\
+available_locators = [\
+    "login_button",\
+    "signup_btn",\
+    "home_link",\
+    "login_link"\
+]\
+\
+best_match = None\
+lowest_distance = float('inf')\
+\
+for locator in available_locators:\
+    dist = edit_distance(old_locator, locator)\
+    print(f"\{locator\} -> distance = \{dist\}")\
+\
+    if dist < lowest_distance:\
+        lowest_distance = dist\
+        best_match = locator\
+\
+print("\\nBest Match:", best_match)\
+\
+--------------------------------------------------\
+Expected Output Example\
+--------------------------------------------------\
+\
+login_button -> distance = 5\
+signup_btn   -> distance = 4\
+home_link    -> distance = 8\
+login_link   -> distance = 4\
+\
+Best Match: login_button\
+\
+--------------------------------------------------\
+Real QA Meaning\
+--------------------------------------------------\
+- Instead of failing when locator changes 
+\f2 \uc0\u10060 
+\f0 \
+- System auto-selects closest locator 
+\f2 \uc0\u9989 
+\f0 \
+- Improves stability of automation tests\
+\
+--------------------------------------------------\
+Where Used\
+--------------------------------------------------\
+- Selenium self-healing frameworks\
+- AI-based automation tools\
+- Dynamic UI locator recovery\
+\
+--------------------------------------------------\
+Simple Memory\
+--------------------------------------------------\
+Fewer changes = more similar = better match\
+\
+--------------------------------------------------\
+5-second memory\
+--------------------------------------------------\
+String similarity = find closest locator automatically\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\fs48 \cf2  What happened?\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f4 \cf2 	1.	Took old locator\
+	2.	Compared with all options\
+	3.	Calculated similarity\
+	4.	Picked closest match\
+\
+Story of healing \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f5\b\fs30 \cf2 E. Confidence score
+\f3\b0\fs28 \cf2 \
+\
+Instead of only saying \'93this is the closest,\'94 AI tools  often calculate a score like:\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	string similarity: 40%\
+	\'95	text match: 30%\
+	\'95	tag/type match: 20%\
+	\'95	page position: 10%\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f5\b\fs34 \cf2 Simple internal flow of AI self-healing\
+1. Original locator fails\
+2. Tool scans current DOM\
+3. Collects candidate elements\
+4. Compares old element with candidates\
+5. Scores each candidate\
+6. Picks best match\
+7. Retries action\
+8. Logs healed locator\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\fs30 \cf2 AI tools
+\f3\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	compare strings\
+	\'95	compare attributes\
+	\'95	compare text\
+	\'95	compare DOM position\
+	\'95	calculate confidence\
+	\'95	sometimes learn over time\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+
+\fs36 \cf2 \'93I wanted 
+\f6 login_btn
+\f3 . Let me search for something with similar id, same text, same tag, same place, and same behavior.\
+\
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clbrdrt\brdrs\brdrw15\brdrcf0 \clbrdrl\brdrs\brdrw15\brdrcf0 \clbrdrb\brdrs\brdrw15\brdrcf0 \clbrdrr\brdrs\brdrw15\brdrcf0 \clpadl100 \clpadr100 \gaph\cellx4320
+\clvertalc \clshdrawnil \clbrdrt\brdrs\brdrw15\brdrcf0 \clbrdrl\brdrs\brdrw15\brdrcf0 \clbrdrb\brdrs\brdrw15\brdrcf0 \clbrdrr\brdrs\brdrw15\brdrcf0 \clpadl100 \clpadr100 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+
+\f0\fs48 \cf0 Fuzzy Matching in Python\cell 
+\pard\intbl\itap1\pardeftab720\partightenfactor0
+\cf0 Self-Healing
+\fs40 \cell \lastrow\row
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\fs28 \cf2 \uc0\u55357 \u56393 
+\f3  
+\f7\b Fuzzy Matching = advanced form of String Similarity
+\f3\b0 \
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth3326\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx4320
+\clvertalc \clshdrawnil \clwWidth5292\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\qc\partightenfactor0
+
+\f8\b\fs36 \cf0 \expnd0\expndtw0\kerning0
+Topic\cell 
+\pard\intbl\itap1\pardeftab720\sa240\qc\partightenfactor0
+\cf0 Meaning\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth3326\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx4320
+\clvertalc \clshdrawnil \clwWidth5292\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 String Similarity (Edit Distance)
+\f9\b0 \cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Counts number of changes\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth3326\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx4320
+\clvertalc \clshdrawnil \clwWidth5292\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+
+\f8\b \cf0 Fuzzy Matching
+\f9\b0 \cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Gives similarity score (0\'96100) and smarter comparison
+\fs24 \cell \lastrow\row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\qc\partightenfactor0
+
+\f8\b\fs36 \cf0 Feature\cell 
+\pard\intbl\itap1\pardeftab720\sa240\qc\partightenfactor0
+\cf0 Edit Distance\cell 
+\pard\intbl\itap1\pardeftab720\sa240\qc\partightenfactor0
+\cf0 Fuzzy Matching\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+
+\f9\b0 \cf0 Output\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Number (5)\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Score (90%)\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Logic\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Simple operations\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Smart scoring\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Understanding\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Characters only\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Patterns + similarity\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Flexibility\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Low\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 High\cell \row
+
+\itap1\trowd \taflags0 \trgaph108\trleft-108 \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth1413\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth1740\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth1948\clftsWidth3 \clmart10 \clmarl10 \clmarb10 \clmarr10 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadt20 \clpadl20 \clpadb20 \clpadr20 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Usage\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Basic logic\cell 
+\pard\intbl\itap1\pardeftab720\sa240\partightenfactor0
+\cf0 Real systems
+\fs24 \cell \lastrow\row
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+
+\f3\fs36 \cf2 \kerning1\expnd0\expndtw0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\fs28 \cf2 Fuzzy matching asks:\
+\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 \'93They are not identical, but how close are they?\'94\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+\cf2 Python fuzzy-matching tools return a 
+\f7\b similarity score\
+
+\f3\b0 ibraries commonly used for this include 
+\f7\b RapidFuzz
+\f3\b0  and the older 
+\f7\b FuzzyWuzzy/TheFuzz-style APIs
+\f3\b0 .
+\fs36 \cf2 \
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 \
+# =========================================\
+# Fuzzy Matching in Python \'96 Self-Healing\
+# =========================================\
+\
+# Concept:\
+# Fuzzy matching compares strings that are NOT exactly the same,\
+# but are similar, and gives a similarity score (0\'96100).\
+\
+# Example:\
+# "login_btn" vs "login_button" \uc0\u8594  ~85\'9695% similar\
+\
+# -----------------------------------------\
+# Why this is important in QA\
+# -----------------------------------------\
+# Problem:\
+# Locator changes break automation tests\
+\
+# Old locator:\
+# id = "login_btn"\
+\
+# New locator:\
+# id = "login_button"\
+\
+# Normal Selenium:\
+# "login_btn" != "login_button" \uc0\u8594  Test fails 
+\f2 \uc0\u10060 
+\f3 \
+\
+# Fuzzy Matching:\
+# Compare similarity \uc0\u8594  choose closest match \u8594  Test continues 
+\f2 \uc0\u9989 
+\f3 \
+\
+\
+# -----------------------------------------\
+# Install library (Run once)\
+# -----------------------------------------\
+# pip install rapidfuzz\
+\
+\
+# -----------------------------------------\
+# Basic Fuzzy Matching Example\
+# -----------------------------------------\
+from rapidfuzz import fuzz, process\
+\
+old_locator = "login_btn"\
+\
+available_locators = [\
+    "login_button",\
+    "signup_btn",\
+    "home_link",\
+    "login_link",\
+    "logout_button"\
+]\
+\
+print("Comparing locators using fuzzy matching:\\n")\
+\
+for locator in available_locators:\
+    score = fuzz.ratio(old_locator, locator)\
+    print(f"\{locator\} -> similarity score = \{score\}")\
+\
+# Find best match automatically\
+best_match = process.extractOne(old_locator, available_locators, scorer=fuzz.ratio)\
+\
+print("\\nBest Match:", best_match[0])\
+print("Best Score:", best_match[1])\
+\
+\
+# -----------------------------------------\
+# Expected Output Example\
+# -----------------------------------------\
+# login_button -> similarity score = 85.7\
+# signup_btn -> similarity score = 63.1\
+# home_link -> similarity score = 22.2\
+# login_link -> similarity score = 70.0\
+# logout_button -> similarity score = 45.0\
+#\
+# Best Match: login_button\
+# Best Score: 85.7\
+\
+\
+# -----------------------------------------\
+# AI-Style Self-Healing (Advanced)\
+# -----------------------------------------\
+# Instead of comparing only strings, we compare full element properties\
+\
+old_element = \{\
+    "id": "login_btn",\
+    "text": "Login",\
+    "tag": "button",\
+    "type": "submit"\
+\}\
+\
+candidate_elements = [\
+    \{\
+        "id": "login_button",\
+        "text": "Login",\
+        "tag": "button",\
+        "type": "submit"\
+    \},\
+    \{\
+        "id": "signin_btn",\
+        "text": "Sign In",\
+        "tag": "button",\
+        "type": "submit"\
+    \},\
+    \{\
+        "id": "home_link",\
+        "text": "Home",\
+        "tag": "a",\
+        "type": ""\
+    \}\
+]\
+\
+\
+def calculate_confidence(old_element, candidate):\
+    # Compare ID similarity (40%)\
+    id_score = fuzz.ratio(old_element["id"], candidate["id"])\
+\
+    # Compare visible text (30%)\
+    text_score = fuzz.ratio(old_element["text"], candidate["text"])\
+\
+    # Compare tag (20%)\
+    tag_score = 100 if old_element["tag"] == candidate["tag"] else 0\
+\
+    # Compare type (10%)\
+    type_score = 100 if old_element["type"] == candidate["type"] else 0\
+\
+    # Final weighted score\
+    final_score = (\
+        id_score * 0.4 +\
+        text_score * 0.3 +\
+        tag_score * 0.2 +\
+        type_score * 0.1\
+    )\
+\
+    return final_score\
+\
+\
+print("\\nAI-style self-healing scoring:\\n")\
+\
+best_match = None\
+best_score = 0\
+\
+for candidate in candidate_elements:\
+    score = calculate_confidence(old_element, candidate)\
+    print(f"\{candidate['id']\} -> confidence score = \{score:.2f\}")\
+\
+    if score > best_score:\
+        best_score = score\
+        best_match = candidate\
+\
+\
+print("\\nBest healed element:")\
+print(best_match)\
+print("Final confidence score:", round(best_score, 2))\
+\
+\
+# -----------------------------------------\
+# Real QA Meaning\
+# -----------------------------------------\
+# Instead of failing when locator changes:\
+# 
+\f2 \uc0\u10060 
+\f3  Test fails\
+\
+# System does:\
+# 1. Compare old locator with current elements\
+# 2. Calculate similarity scores\
+# 3. Choose best match\
+# 4. Continue execution\
+\
+# 
+\f2 \uc0\u9989 
+\f3  Test passes (self-healing)\
+\
+\
+# -----------------------------------------\
+# Simple Memory\
+# -----------------------------------------\
+# Edit Distance \uc0\u8594  count changes\
+# Fuzzy Matching \uc0\u8594  similarity score\
+# AI Self-Healing \uc0\u8594  smart scoring using multiple attributes\
+\
+\
+# -----------------------------------------\
+# 5-second memory\
+# -----------------------------------------\
+# Compare \uc0\u8594  score \u8594  pick highest \u8594  fix locator automatically\
+}

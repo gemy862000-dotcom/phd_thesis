@@ -1,0 +1,165 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 .SFNS-Regular;\f2\fnil\fcharset0 Menlo-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red12\green12\blue12;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c5098\c5098\c5098;\csgray\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs36 \cf0 Learning python samples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1 \cf2 Install pycharm compiler \
+Inrsll python and check by  \'97>
+\f2\fs28 \cf3 \CocoaLigature0 python --version
+\f1\fs36 \cf2 \CocoaLigature1 \
+
+\fs72 1-10 Important Python Concepts In 20 Minutes\
+https://www.youtube.com/watch?v=Gx5qb1uHss4
+\fs36 \
+\
+
+\f0 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 1. Variables\
+# Definition: Used to store values (numbers, text, etc.)\
+x = 5\
+name = "payment"\
+\
+2. Lists\
+# Definition: A collection of multiple values (ordered, changeable)\
+data = [1, 2, 3, 4] \'97\
+\
+3. Dictionaries\
+# Definition: Stores data in key-value pairs (structured data)\
+item = \{"bugs": 3, "failures": 4\}\
+\
+4. Loops\
+# Definition: Used to repeat actions over a sequence of data\
+for x in data:\
+    print(x)\
+\
+5. Functions\
+# Definition: Reusable block of code that performs a task\
+def predict(x):\
+    return x * 2\
+\
+6. Conditions (if statements)\
+# Definition: Used to make decisions based on conditions\
+risk = 0.9\
+if risk > 0.8:\
+    print("High Risk")\
+\
+7. Classes\
+# Definition: Blueprint to create objects (used for structure, optional for now)\
+class Model:\
+    def __init__(self):\
+        pass\
+\
+8. Modules / Imports\
+# Definition: Used to import external libraries (tools)\
+import pandas as pd\
+\
+9. File Handling (CSV)\
+# Definition: Reading data from files (datasets)\
+df = pd.read_csv("data.csv")\
+\
+10. Error Handling\
+# Definition: Prevents program from crashing when errors occur\
+try:\
+    x = 1 / 0\
+except:\
+    print("Error occurred")\
+\
+\
+\
+Example\
+# 1. Modules / Imports\
+# Definition: Load external libraries\
+import pandas as pd\
+\
+# 2. Variables\
+# Definition: Store single values\
+risk_threshold = 0.8\
+dataset_file = "sample_modules.csv"\
+\
+# 3. Lists\
+# Definition: Store multiple values\
+selected_tests = []\
+\
+# 4. Dictionaries\
+# Definition: Store structured key-value data\
+new_module = \{"module": "payment", "past_failures": 4, "bug_history": 3, "code_changes": 7\}\
+\
+# 5. Classes\
+# Definition: Organize related logic into one structure\
+class SimpleDefectModel:\
+    def __init__(self, threshold):\
+        self.threshold = threshold\
+\
+    # 6. Functions\
+    # Definition: Reusable block of code\
+    def predict_risk(self, past_failures, bug_history, code_changes):\
+        score = (past_failures * 0.3) + (bug_history * 0.3) + (code_changes * 0.1)\
+        return min(score / 3, 1.0)\
+\
+    def decide_test(self, risk):\
+        # 7. Conditions\
+        # Definition: Make decisions\
+        if risk >= self.threshold:\
+            return "run_critical_tests"\
+        else:\
+            return "run_normal_tests"\
+\
+# 8. File Handling\
+# Definition: Read and write data files\
+# Create a small CSV dataset first\
+sample_data = pd.DataFrame([\
+    \{"module": "payment", "past_failures": 4, "bug_history": 3, "code_changes": 7\},\
+    \{"module": "cart", "past_failures": 1, "bug_history": 0, "code_changes": 2\},\
+    \{"module": "checkout", "past_failures": 3, "bug_history": 2, "code_changes": 6\}\
+])\
+sample_data.to_csv(dataset_file, index=False)\
+\
+# Read dataset\
+df = pd.read_csv(dataset_file)\
+\
+# Create model\
+model = SimpleDefectModel(risk_threshold)\
+\
+# 9. Loops\
+# Definition: Repeat actions over many items\
+for _, row in df.iterrows():\
+    risk = model.predict_risk(row["past_failures"], row["bug_history"], row["code_changes"])\
+    action = model.decide_test(risk)\
+\
+    result = \{\
+        "module": row["module"],\
+        "risk": round(risk, 2),\
+        "action": action\
+    \}\
+\
+    print(result)\
+\
+    if action == "run_critical_tests":\
+        selected_tests.append(f"test_\{row['module']\}")\
+\
+print("Selected tests:", selected_tests)\
+\
+# Predict for one new module\
+new_risk = model.predict_risk(\
+    new_module["past_failures"],\
+    new_module["bug_history"],\
+    new_module["code_changes"]\
+)\
+print("New module risk:", round(new_risk, 2))\
+print("New module decision:", model.decide_test(new_risk))\
+\
+# 10. Error Handling\
+# Definition: Prevent crash if something goes wrong\
+try:\
+    broken = 10 / 0\
+except Exception as e:\
+    print("Handled error:", e)\
+\
+}

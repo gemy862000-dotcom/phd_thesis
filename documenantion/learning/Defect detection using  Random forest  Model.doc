@@ -1,0 +1,250 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red41\green0\blue130;\red77\green0\blue105;\red102\green0\blue141;
+\red32\green0\blue99;\red5\green68\blue254;\red217\green11\blue5;\red74\green0\blue230;\red5\green61\blue204;
+}
+{\*\expandedcolortbl;;\cssrgb\c21681\c10251\c58230;\cssrgb\c37964\c9215\c48780;\cssrgb\c48169\c12809\c62212;
+\cssrgb\c17067\c7357\c46453;\cssrgb\c0\c38136\c99824;\cssrgb\c88946\c14202\c0;\cssrgb\c36820\c18688\c92265;\cssrgb\c0\c33896\c83855;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs36 \cf0 Defect detection using  Random forest  Model\
+https://www.youtube.com/watch?v=J4Wdy0Wc_xQ\
+\
+\
+Random Forest Model \'96 Defect Prediction (Summary)\
+\
+What is it?\
+Random Forest is a machine learning model that combines 
+\fs48 \cf2 multiple decision trees
+\fs36 \cf0 . Each tree makes a prediction, and the f\cf3 inal result\cf0  is based on \cf4 majority voting.\cf0 \
+\
+How it works:\
+1. Creates multiple decision trees using random samples of data\
+2. Each tree learns different patterns\
+3. Each tree makes a prediction\
+4. Final prediction is the most common result (majority vote)\
+\
+In Defect Prediction:\
+The model is used to \cf2 predict software defects based on structured data\cf0 .\
+\
+Input examples:\
+- Lines of Code (LOC)\
+- Code complexity\
+- Number of changes\
+- Developer activity\
+\
+Output:\
+- Defect\
+- No Defect\
+\
+The model l\cf4 earns from historical data\cf0  to predict which \cf3 modules a\cf0 re likely to \cf4 have bugs.\cf0 \
+\
+Why it is powerful:\
+- Reduces \cf4 overfitting\cf0  compared to a\cf5  single decision\cf0  tree\
+- Works well with \cf2 large and noisy datasets\cf0 \
+- Provides \cf3 high accuracy\cf0 \
+- Handles real-world data effectively\
+\
+\cf6 Why it is the best baseline model:\
+\cf0 - \cf7 Easy\cf0  to implement\
+- Requires \cf4 minimal tuning\cf0 \
+- \cf8 Consistent performance\cf0  across datasets\
+- \cf9 Widely used \cf0 in defect prediction\
+\
+10-second memory version:\
+Random Forest = multiple decision trees voting together to predict defects using structured data, providing accurate and reliable results.\
+\
+Interview version:\
+Random Forest predicts defects by combining multiple decision trees trained on structured code metrics, improving accuracy and reducing overfitting.\
+\
+
+\fs128 \cf4 How to implement it to detect prediction \
+
+\fs36 \cf0 How to Implement Random Forest in Defect Prediction\
+\
+Goal:\
+Use historical software/project data to predict whether a module, file, or ticket is likely to have a defect.\
+\
+1. Prepare the dataset\
+Your dataset should be \cf5 structured in tabular form.\cf0 \
+\
+Example input features:\
+- lines_of_code\
+- complexity\
+- number_of_changes\
+- churn\
+- number_of_developers\
+- past_defects\
+\
+Target column:\
+- defect   -> 1 = defective, 0 = not defective\
+\
+RandomForestClassifier in scikit-learn is a classifier that trains many decision trees on random subsamples and combines them to improve predictive accuracy and reduce overfitting.  [oai_citation:0\'87Scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?utm_source=chatgpt.com)\
+\
+2. Example dataset format\
+\
+lines_of_code,complexity,number_of_changes,churn,number_of_developers,past_defects,defect\
+120,10,5,30,2,1,1\
+80,4,2,10,1,0,0\
+200,15,8,50,3,2,1\
+60,3,1,5,1,0,0\
+\
+3. Python implementation\
+\
+import pandas as pd\
+from sklearn.model_selection import train_test_split\
+from sklearn.ensemble import RandomForestClassifier\
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score\
+\
+# Load dataset\
+data = pd.read_csv("defect_data.csv")\
+\
+# Features and target\
+X = data.drop(columns=["defect"])\
+y = data["defect"]\
+\
+# Split data\
+X_train, X_test, y_train, y_test = train_test_split(\
+    X, y, test_size=0.2, random_state=42\
+)\
+\
+# Build model\
+model = RandomForestClassifier(\
+    n_estimators=100,\
+    random_state=42,\
+    class_weight="balanced"\
+)\
+\
+# Train model\
+model.fit(X_train, y_train)\
+\
+# Predict\
+y_pred = model.predict(X_test)\
+\
+# Evaluate\
+print("Accuracy:", accuracy_score(y_test, y_pred))\
+print(confusion_matrix(y_test, y_pred))\
+print(classification_report(y_test, y_pred))\
+\
+# Predict new module risk\
+new_modules = pd.DataFrame([\
+    [150, 12, 6, 35, 2, 1],\
+    [50, 2, 1, 4, 1, 0]\
+], columns=X.columns)\
+\
+predictions = model.predict(new_modules)\
+probabilities = model.predict_proba(new_modules)\
+\
+print("Predictions:", predictions)\
+print("Probabilities:", probabilities)\
+\
+4. What each step means\
+- train_test_split: separates training data from test data\
+- RandomForestClassifier: builds many trees and combines their votes\
+- fit(): trains the model\
+- predict(): returns defect or no defect\
+- predict_proba(): returns probability of defect\
+\
+scikit-learn\'92s getting-started workflow is fit, then predict, then evaluate, and RandomForestClassifier supports both predict() and predict_proba().  [oai_citation:1\'87Scikit-learn](https://scikit-learn.org/stable/getting_started.html?utm_source=chatgpt.com)\
+\
+5. Best features for defect prediction\
+Typical useful features:\
+- LOC (lines of code)\
+- cyclomatic complexity\
+- code churn\
+- commit count\
+- developer count\
+- previous bug history\
+- file age\
+- dependency count\
+\
+Feature importance can be inspected after training because tree ensembles expose feature importance values.  [oai_citation:2\'87Scikit-learn](https://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_importances.html?utm_source=chatgpt.com)\
+\
+6. Check feature importance\
+\
+import pandas as pd\
+\
+importance = pd.Series(model.feature_importances_, index=X.columns)\
+print(importance.sort_values(ascending=False))\
+\
+This helps identify which factors most influence defect prediction. scikit-learn documents feature importance support for forest models.  [oai_citation:3\'87Scikit-learn](https://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_importances.html?utm_source=chatgpt.com)\
+\
+7. Handle class imbalance\
+In defect datasets, defective items are often fewer than non-defective ones.\
+Use:\
+class_weight="balanced"\
+\
+This is supported directly by RandomForestClassifier and is useful when classes are imbalanced.  [oai_citation:4\'87Scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?utm_source=chatgpt.com)\
+\
+8. Improve the model\
+You can tune:\
+- n_estimators\
+- max_depth\
+- min_samples_split\
+- min_samples_leaf\
+- max_features\
+\
+For tuning, RandomizedSearchCV is a good option in scikit-learn.  [oai_citation:5\'87Scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html?utm_source=chatgpt.com)\
+\
+Example:\
+\
+from sklearn.model_selection import RandomizedSearchCV\
+\
+params = \{\
+    "n_estimators": [100, 200, 300],\
+    "max_depth": [None, 5, 10, 20],\
+    "min_samples_split": [2, 5, 10],\
+    "min_samples_leaf": [1, 2, 4]\
+\}\
+\
+search = RandomizedSearchCV(\
+    RandomForestClassifier(random_state=42, class_weight="balanced"),\
+    param_distributions=params,\
+    n_iter=10,\
+    cv=5,\
+    random_state=42\
+)\
+\
+search.fit(X_train, y_train)\
+best_model = search.best_estimator_\
+\
+9. Save the model\
+\
+import joblib\
+joblib.dump(model, "defect_prediction_model.joblib")\
+\
+Load later:\
+model = joblib.load("defect_prediction_model.joblib")\
+\
+scikit-learn recommends model persistence tools such as joblib when you need to reuse a trained model in the same environment family.  [oai_citation:6\'87Scikit-learn](https://scikit-learn.org/stable/model_persistence.html?utm_source=chatgpt.com)\
+\
+10. Practical QA use case\
+You can use this in defect prediction for:\
+- source files\
+- modules\
+- microservices\
+- user stories\
+- releases\
+- API components\
+\
+Example:\
+If a module has high complexity, many recent changes, and many previous bugs, the model may predict:\
+- defect = 1\
+- probability = 0.82\
+\
+This means the module is high risk and should be prioritized in testing.\
+\
+11. Simple implementation flow to remember\
+Collect historical data\
+-> clean and structure it\
+-> choose features\
+-> split train/test\
+-> train Random Forest\
+-> evaluate\
+-> predict high-risk modules\
+-> use results for testing prioritization\
+\
+12. 10-second explanation\
+Random Forest defect prediction works by training many decision trees on historical software metrics and combining their votes to predict whether a module is likely to contain defects.}
