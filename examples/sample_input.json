@@ -1,0 +1,13 @@
+{
+  "requirements": [
+    "User should be able to log in with valid credentials",
+    "User should receive an error for invalid password",
+    "System should lock account after five failed attempts"
+  ],
+  "broken_locator": "//button[@id='login-btn']",
+  "dom_candidates": [
+    "//button[@id='submit-login']",
+    "//input[@name='username']",
+    "//button[@class='login-btn']"
+  ]
+}
